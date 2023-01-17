@@ -1,0 +1,63 @@
+.container{
+    max-width: 1440px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgb(110 29 104 / 88%) 59%);
+    flex-direction: column;
+    font-size: 25px;
+    font-family: "Open Sans Condensed Light" ;
+    padding-left: 40px;
+}
+.temperature{
+    margin: 22px;
+}
+.list{
+    display: flex;
+    justify-content: space-around;
+    gap: 50px;
+    padding: 0;
+
+}
+
+.search_city{
+    display: flex;
+    justify-content: center;
+    margin: 30px 50px 0 1000px;
+}
+.weather{
+    font-size: 44px;
+    max-width: 500px;
+}
+.cloud{
+    font-size: 36px;
+    max-width: 500px;
+}
+
+.sunriseAndSunset{
+    display: flex;
+    font-size: 30px;
+    gap: 50px;
+    justify-content: center;
+    gap: 150px;
+}
+
+.sunrise_sunset{
+    width: 200px;
+}
+
+.sun_time{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin: 0;
+}
+
+.sun_list{
+    max-width: 700px;
+    padding-left: 600px;
+
+}
+.city{
+    margin: 10px 0 35px;
+}
