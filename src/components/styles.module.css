@@ -6,7 +6,7 @@
     background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgb(110 29 104 / 88%) 59%);
     flex-direction: column;
     font-size: 25px;
-    font-family: "Open Sans Condensed Light" ;
+    font-family: "Open Sans Condensed Light", SansSerif ;
     padding-left: 40px;
 }
 .temperature{
