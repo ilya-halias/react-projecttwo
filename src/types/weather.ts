@@ -17,6 +17,6 @@ export interface Weather {
     }
     name: string;
     id?: number;
-    icon: string;
+    weather:[{icon: string}];
 
 }

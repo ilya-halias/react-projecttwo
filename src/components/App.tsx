@@ -1,5 +1,6 @@
 
-import { InfoItem } from "../components/common";
+import { InfoItem} from "../components/common";
+import {ErrorBoundary} from "../components/common/error"
 import { Component, FC } from "react";
 import css from "./styles.module.css" ;
 // import {REACT_APP_BASE_URL} from "../constans/weather-api";
@@ -11,6 +12,8 @@ import {Input} from "./common/input";
 import {Dropdown} from "../components/common";
 import sunrise from "./img/sunrise_1.svg";
 import sunset from "./img/sunset.svg";
+// @ts-ignore
+import debounce from 'lodash/debounce';
 
 
 
@@ -18,7 +21,7 @@ interface AppState {
     weather: Weather
     search: string
     unit: string
-    system: string
+
 }
 
 const myFetch = (url: string) => {
@@ -39,7 +42,7 @@ const myFetch = (url: string) => {
 
     interface WrapperProps {
     unit: string
-    system: string}
+    }
 }
 export class App extends Component<{}, AppState> {
 
@@ -50,7 +53,7 @@ export class App extends Component<{}, AppState> {
     }
 
     state: AppState = {
-        system:"°C",
+
         unit:"metric",
        weather:{
            main: {
@@ -71,15 +74,18 @@ export class App extends Component<{}, AppState> {
                sunset: 0,
            },
            name: "",
-           icon: ""
+           weather:[{icon: ""}],
 
        },
        search: "minsk"
     }
 
+    fetchWeatherDebounced = debounce(this.componentDidMount, 1000)
+    isOffline = false;
     componentDidMount(snapshot?: any) {
-        myFetch( `https://api.openweathermap.org/data/2.5/weather?appid=21f54f5696d81d7a71d314ed425f098d&q=${this.state.search}&units=${this.state.unit}&system=${this.state.system}`)
-            .then((data) => this.setState(prev => ({ ...prev, weather: { name: data.name, dt: data.dt, icon: data.icon, main: { ...data.main, }, wind: { ...data.wind }, sys:{...data.sys}, clouds: {...data.clouds}} })));
+        if(this.isOffline){return}
+        myFetch( `https://api.openweathermap.org/data/2.5/weather?appid=f8d51670d47d153d728c147ab99cd764=${this.state.search}&units=${this.state.unit}`)
+            .then((data) => this.setState(prev => ({ ...prev, weather: { name: data.name, dt: data.dt, icon: data.icon, main: { ...data.main, }, weather: data.weather, wind: { ...data.wind }, sys:{...data.sys}, clouds: {...data.clouds}} })));
     }
 
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<AppState>, snapshot?: any) {
@@ -103,12 +109,9 @@ export class App extends Component<{}, AppState> {
             ]
         }
         if( prevState.search !== this.state.search){
-            this.componentDidMount()
+            this.fetchWeatherDebounced()
         }
         if (prevState.unit !== this.state.unit){
-            this.componentDidMount()
-        }
-        if (prevState.system !== this.state.system){
             this.componentDidMount()
         }
 
@@ -134,14 +137,12 @@ export class App extends Component<{}, AppState> {
     unitHandler = (unit:string) =>{
         this.setState({unit})
     }
-    systemHandler = (system:string)=>{
-        this.setState({system})
-}
+
 
     units = [
-        { value: "metric", label: "Metric, °C", system: "°C" },
-        { value: "standard", label: "Standard, K" , system: "K" },
-        { value: "imperial", label: "Imperial, °F", system: "°F"  },
+        { value: "metric", label: "Metric, °C"},
+        { value: "standard", label: "Standard, K"  },
+        { value: "imperial", label: "Imperial, °F" }
 
     ]
 
@@ -152,23 +153,24 @@ export class App extends Component<{}, AppState> {
     return(
 
         <div className={css.container}>
-
+            <ErrorBoundary fallback={<span>Уже чиню </span>}>
             <Dropdown value={this.state.unit} onChange={(e)=> this.unitHandler(e.target.value)} options={this.units}/>
             <div className={css.search_city}>
                 <Input value={this.state.search} onChange={(search) => this.setState({ search })} />
             </div>
 
-               {/*<img src={`https://openweathermap.org/img/w/${this.state.weather.icon}.png`} alt="icon"/>*/}
+               <img src={`https://openweathermap.org/img/wn/${this.state.weather.weather[0].icon }@2x.png`} className={css.img_back } alt="icon"/>
 
             <div className={css.weather}>
             <p className={css.city}>
                 {this.state.weather.name}
             </p>
             <p className={css.temperature}>
-                Температура воздуха: {Math.round(this.state.weather?.main.temp )}{this.state.system}
+                Температура воздуха: {Math.round(this.state.weather?.main.temp )}
             </p>
             <p className={css.temperature}>
-                Ощущается как: {Math.round(this.state.weather?.main.feels_like) }{this.state.system}</p>
+                Ощущается как: {Math.round(this.state.weather?.main.feels_like) }
+            </p>
 
               </div>
 
@@ -197,9 +199,8 @@ export class App extends Component<{}, AppState> {
                 ))}
             </ul>
             </div>
-
+            </ErrorBoundary>
         </div>
-
 
     )
 }
